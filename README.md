@@ -1,5 +1,11 @@
 # TOTP Webhookbot
 
+## Usage
+
+```
+$ gcloud functions deploy PostTOTP --runtime go113 --env-vars-file .env.yaml --trigger-topic post_totp
+```
+
 ## License
 
 [MIT](LICENSE)
