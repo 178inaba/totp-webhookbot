@@ -4,9 +4,11 @@ import (
 	"context"
 	"encoding/hex"
 	"fmt"
+	"net/http"
 	"os"
 	"time"
 
+	"cloud.google.com/go/compute/metadata"
 	secretmanager "cloud.google.com/go/secretmanager/apiv1beta1"
 	"github.com/hgfischer/go-otp"
 	"github.com/nlopes/slack"
@@ -43,7 +45,12 @@ func (r *secretRepository) get(ctx context.Context, secretName string) (string, 
 }
 
 func PostTOTP(ctx context.Context, _ struct{}) error {
-	c, err := newSecretRepository(ctx, os.Getenv("GCP_PROJECT"))
+	projectID, err := metadata.NewClient(&http.Client{}).ProjectID()
+	if err != nil {
+		return xerrors.Errorf("get project id: %w", err)
+	}
+
+	c, err := newSecretRepository(ctx, projectID)
 	if err != nil {
 		return xerrors.Errorf("new secret repository: %w", err)
 	}
